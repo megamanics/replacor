@@ -124,11 +124,15 @@ fetch(searchQuery, {
     headers: header
     //body: JSON.stringify({query: searchQuery}),
 }).then(res => res.json()).then(json => {
-    console.table({"Content IDs: ": json.results.map(result => result.id)});
-    console.table({"Total Size: ": json.size});
-    json.results.forEach(result => {
-        console.debug(result.id);
-    });
+    if (json.results != null) {
+        console.table({"Content IDs: ": json.results.map(result => result.id)});
+        console.table({"Total Size: ": json.size});
+        json.results.forEach(result => {
+            console.debug(result.id);
+        });
+    } else {
+        console.error(json.message);
+    }
 
 }).catch(err => {
     console.error(err);
