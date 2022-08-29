@@ -75,9 +75,8 @@ function getContent(id) {
             let content = json.body.storage.value;
             let title = json.title;
             let type = json.type;
-            let replacedContent = content.replace(new RegExp(search, 'g'), replacestr);
-            let titleReplaced = title.replace(new RegExp(search, 'g'), replacestr);
-            console.info("ID:" + id + " : " + type + " : " + " version:" + json.version.number + ":\n" + content + "\n" + replacedContent)
+            let replacedContent = content.replace(new RegExp(search, 'ig'), replacestr);
+            let titleReplaced = title.replace(new RegExp(search, 'ig'), replacestr);
             replaceContent(id, json.version.number + 1, type, titleReplaced, JSON.stringify(replacedContent));
         }).catch(err => {
         console.error(err);
@@ -98,14 +97,20 @@ function replaceContent(id, version, type, title, content) {
             }
         }
     }`;
-    console.info(bodyData);
+    console.table(bodyData.toString());
     fetch(getPageUpdateQuery(id), {
         method: 'PUT',
         headers: header,
         body: bodyData
     }).then(res => res.json())
         .then(json => {
-            json.data ? console.log(json.data.errors) : console.log(json);
+            json.data ? console.log(json.data.errors) : console.table({
+                "id": json.id,
+                "type": json.type,
+                "version": json.version.number,
+                "title": json.title
+                //"storage": json.body.storage.value
+            })
         }).catch(err => {
         console.error(err);
     });
