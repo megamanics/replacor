@@ -4,37 +4,35 @@ import fetch from "node-fetch";
 import dotenv from 'dotenv'
 import {Buffer} from 'node:buffer';
 import {Command} from 'commander';
+import log4js from 'log4js';
+
+let logger = log4js.getLogger();
+logger.level = "info";
 
 dotenv.config();
-
-console.debug = process.env.DEBUG ? console.table : () => {
-};
 
 const options = new Command()
     .name('replace.js')
     .description('CLI to replace strings in Confluence Pages')
     .version('0.0.1')
-    .requiredOption('-q, --query <query>', 'CQL query to search for, eg: text~gitlab')
-    .requiredOption('-s, --search  <string>', 'gitlab')
-    .requiredOption('-r, --replace  <string>', 'replace string eg: gitlab -> github')
+    .requiredOption('-q, --query <query>', 'CQL query used to search pages, eg: text~gitlab')
+    .requiredOption('-s, --search  <string>', 'string to replace eg: gitlab')
+    .requiredOption('-r, --replace  <string>', 'replacement string eg: gitlab -> github')
     .requiredOption('-u, --user  <user>', 'user eg: your_email@domain.com')
     .requiredOption('-t, --token <token>', 'your_user_api_token with scope read:content-details:confluence,write:content:confluence')
     .requiredOption('-d, --domain <domainurl>', 'eg: https://<domain_name>.atlassian.net')
     .parse()
     .opts();
 
-console.debug(options);
+logger.debug(options);
 
 let user, token, query, domain, search, replacestr = "";
-user = options.user ? user = options.user : user = process.env.CONFLUENCE_USER;
-//user ? console.debug("USER:" + user) : console.warn("CONFLUENCE_USER not set");
-
-token = options.token ? token = options.token : token = process.env.CONFLUENCE_TOKEN;
+replacestr = options.replace;
 query = options.query;
 search = options.search;
+user = options.user ? user = options.user : user = process.env.CONFLUENCE_USER;
+token = options.token ? token = options.token : token = process.env.CONFLUENCE_TOKEN;
 domain = options.domain ? domain = options.domain : domain = process.env.CONFLUENCE_DOMAIN;
-replacestr = options.replace;
-
 
 const searchQuery = domain + "/wiki/rest/api/content/search?cql=" + query;
 
@@ -42,15 +40,15 @@ const header = {
     'Content-Type': 'application/json',
     'Authorization': `Basic ` + Buffer.from(user + `:` + token).toString('base64')
 };
-console.debug({"searchQuery: ": searchQuery});
-console.debug(header);
+logger.debug({"searchQuery: ": searchQuery});
+logger.debug(header);
 
 fetch(searchQuery, {
     method: 'GET',
     headers: header
 }).then(res => res.json()).then(json => {
-    console.table({"Content IDs: ": json.results.map(result => result.id)});
-    console.table({"Total Size: ": json.size});
+    logger.debug({"Content IDs: ": json.results.map(result => result.id)});
+    json.size ? console.table({"Total Pages: ": json.size}) : console.table({"No results matching query": query});
     json.results.forEach(result => {
         getContent(result.id);
     });
@@ -97,7 +95,7 @@ function replaceContent(id, version, type, title, content) {
             }
         }
     }`;
-    console.table(bodyData.toString());
+    logger.debug(bodyData.toString());
     fetch(getPageUpdateQuery(id), {
         method: 'PUT',
         headers: header,
@@ -109,7 +107,6 @@ function replaceContent(id, version, type, title, content) {
                 "type": json.type,
                 "version": json.version.number,
                 "title": json.title
-                //"storage": json.body.storage.value
             })
         }).catch(err => {
         console.error(err);
