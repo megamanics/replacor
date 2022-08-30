@@ -7,7 +7,7 @@ import {Command} from 'commander';
 import log4js from 'log4js';
 
 let logger = log4js.getLogger();
-logger.level = "info";
+process.env.LOGLEVEL ? logger.level = process.env.LOGLEVEL : logger.level = 'info';
 
 dotenv.config();
 
