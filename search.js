@@ -46,7 +46,12 @@ fetch(searchQuery, {
         if (json.results != null) {
             let hm = []
             json.results.forEach(result => {
-                hm.push({"id": result.id, "type": result.type, "title": result.title})
+                hm.push({
+                    "id": result.id,
+                    "type": result.type,
+                    "url": domain + "/wiki" + result._links.tinyui,
+                    "title": result.title
+                })
             });
             json.size ? console.table(hm) : console.table({"No results matching query": query});
         } else {
