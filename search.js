@@ -41,13 +41,18 @@ console.debug(header);
 fetch(searchQuery, {
     method: 'GET',
     headers: header
-}).then(res => res.json()).then(json => {
-    if (json.results != null) {
-        console.table({"Content IDs: ": json.results.map(result => result.id)});
-        console.table({"Total Size: ": json.size});
-    } else {
-        console.error(json.message);
-    }
-}).catch(err => {
+}).then(res => res.json())
+    .then(json => {
+        if (json.results != null) {
+            let hm = []
+            json.results.forEach(result => {
+                hm.push({"id": result.id, "type": result.type, "title": result.title})
+            });
+            json.size ? console.table(hm) : console.table({"No results matching query": query});
+            console.table({"Total Size: ": json.size});
+        } else {
+            console.error(json.message);
+        }
+    }).catch(err => {
     console.error(err);
 })
