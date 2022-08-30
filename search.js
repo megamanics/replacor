@@ -49,7 +49,6 @@ fetch(searchQuery, {
                 hm.push({"id": result.id, "type": result.type, "title": result.title})
             });
             json.size ? console.table(hm) : console.table({"No results matching query": query});
-            console.table({"Total Size: ": json.size});
         } else {
             console.error(json.message);
         }
