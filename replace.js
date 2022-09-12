@@ -7,7 +7,7 @@ import {Command} from 'commander';
 import log4js from 'log4js';
 
 let logger = log4js.getLogger();
-process.env.LOGLEVEL ? logger.level = process.env.LOGLEVEL : logger.level = 'info';
+
 
 dotenv.config();
 
@@ -21,18 +21,23 @@ const options = new Command()
     .requiredOption('-u, --user  <user>', 'user eg: your_email@domain.com')
     .requiredOption('-t, --token <token>', 'your_user_api_token with scope read:content-details:confluence,write:content:confluence')
     .requiredOption('-d, --domain <domainurl>', 'eg: https://<domain_name>.atlassian.net')
+    .option('-l, --loglevel <loglevel>', 'loglevel, eg: debug, info, warn, error, fatal')
+    .option('-c, --convertbburl', 'convert bitbucket url format to github url format')
+    .option('--dryrun', 'dry run only')
     .parse()
     .opts();
-
-logger.debug(options);
 
 let user, token, query, domain, search, replacestr = "";
 replacestr = options.replace;
 query = options.query;
 search = options.search;
-user = options.user ? user = options.user : user = process.env.CONFLUENCE_USER;
-token = options.token ? token = options.token : token = process.env.CONFLUENCE_TOKEN;
-domain = options.domain ? domain = options.domain : domain = process.env.CONFLUENCE_DOMAIN;
+user = options.user;
+token = options.token;
+domain = options.domain;
+
+logger.level = options.loglevel ? options.loglevel : process.env.LOGLEVEL;
+
+logger.debug(options);
 
 const searchQuery = domain + "/wiki/rest/api/content/search?cql=" + query;
 
@@ -64,6 +69,18 @@ function getPageUpdateQuery(pageId) {
     return domain + "/wiki/rest/api/content/" + pageId;
 }
 
+function convertBBurl2GH(content) {
+    var re = /projects\/REP\/repos\/(.*)\/browse/gmi;
+    var subst = '$1';
+    return content.replace(re, subst);
+}
+
+function replaceStr(content) {
+    let replacedContent = content.replace(new RegExp(search, 'ig'), replacestr);
+    replacedContent = options.convertbburl ? convertBBurl2GH(replacedContent) : replacedContent;
+    return replacedContent;
+}
+
 function getContent(id) {
     fetch(getPageQuery(id), {
         method: 'GET',
@@ -73,15 +90,15 @@ function getContent(id) {
             let content = json.body.storage.value;
             let title = json.title;
             let type = json.type;
-            let replacedContent = content.replace(new RegExp(search, 'ig'), replacestr);
-            let titleReplaced = title.replace(new RegExp(search, 'ig'), replacestr);
-            replaceContent(id, json.version.number + 1, type, titleReplaced, JSON.stringify(replacedContent));
+            let replacedContent = replaceSt(content);
+            let titleReplaced = replaceStr(title);
+            updateContent(id, json.version.number + 1, type, titleReplaced, JSON.stringify(replacedContent));
         }).catch(err => {
         console.error(err);
     });
 };
 
-function replaceContent(id, version, type, title, content) {
+function updateContent(id, version, type, title, content) {
     let bodyData = `{
         "version": {
             "number": ${version}
@@ -112,3 +129,4 @@ function replaceContent(id, version, type, title, content) {
         console.error(err);
     });
 };
+
