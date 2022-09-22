@@ -70,3 +70,5 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
+    - name: Download all workflow run artifacts
+      uses: actions/download-artifact@v3
