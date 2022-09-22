@@ -74,4 +74,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: codeql results
-        path: results/javascript.sarif
+        path: /home/runner/work/replacor/results/javascript.sarif
