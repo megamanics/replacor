@@ -13,11 +13,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run npm install
-        run:  npm install eslint --save-dev 
-      - run:  npm init @eslint/config 
-      - run:  npm install
+        run:  npm install
       - name: Run ESLint
-        run:  node_modules/.bin/eslint build docs lib script spec-main *.js -f node_modules/@microsoft/eslint-formatter-sarif/sarif.js -o results.sarif || true
+        run:  node_modules/.bin/eslint *.js -f node_modules/@microsoft/eslint-formatter-sarif/sarif.js -o results.sarif || true
       - uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: results.sarif
