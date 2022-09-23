@@ -15,7 +15,7 @@ jobs:
       - name: Run npm install
         run:  npm install eslint --save-dev && npm init @eslint/config && npm install
       - name: Run ESLint
-        run: node_modules/.bin/eslint build docs lib script spec-main -f node_modules/@microsoft/eslint-formatter-sarif/sarif.js -o results.sarif || true
+        run: node_modules/.bin/eslint *.js -f node_modules/@microsoft/eslint-formatter-sarif/sarif.js -o results.sarif || true
       - uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: results.sarif
