@@ -4,6 +4,7 @@
     "replace": "replace.js"
   },
   "dependencies": {
+    "@microsoft/eslint-formatter-sarif": "^3.0.0",
     "colors": "latest",
     "commander": "^9.4.0",
     "diff": "latest",
