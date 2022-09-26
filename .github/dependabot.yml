@@ -11,6 +11,7 @@ updates:
     schedule:
       interval: "daily"
       time: "11:00" #default if 5AM UTC
+      timezone: "America/Los_Angeles"
     versioning-strategy: auto
     open-pull-requests-limit: 10
     commit-message:
@@ -37,6 +38,7 @@ updates:
     schedule:
       interval: "daily"
       time: "12:00" #default if 5AM UTC
+      timezone: "America/Los_Angeles"
     open-pull-requests-limit: 10
     commit-message:
       prefix: "🆙 - Action prod"
