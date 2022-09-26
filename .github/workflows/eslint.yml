@@ -18,4 +18,5 @@ jobs:
         run:  node_modules/.bin/eslint *.js -f node_modules/@microsoft/eslint-formatter-sarif/sarif.js -o results.sarif || true
       - uses: github/codeql-action/upload-sarif@v2
         with:
+          category: es-linter
           sarif_file: results.sarif
