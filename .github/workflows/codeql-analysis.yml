@@ -64,6 +64,8 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@main
+      with:
+        category: codeql-action
     - name: Archive production artifacts
       uses: actions/upload-artifact@v3
       with:
