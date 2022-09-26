@@ -9,10 +9,15 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+      time: "11:00" #default if 5AM UTC
     versioning-strategy: auto
     open-pull-requests-limit: 10
     commit-message:
-      prefix: "🆙 - npm"
+      prefix: "🆙 - npm prod"
+      prefix-development: "🆙 - pip dev"
+      include: "scope"
+    reviewers:
+      - "megamanics"
     assignees:
       - "megamanics"
     allow:
@@ -29,15 +34,18 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+      time: "12:00" #default if 5AM UTC
     open-pull-requests-limit: 10
     commit-message:
-      prefix: "🆙 - Action"
+      prefix: "🆙 - Action prod"
+      prefix-development: "🆙 - Action dev"
+      include: "scope"
     assignees:
       - "megamanics"
     allow:
       - dependency-type: "all"
     labels:
-      - "npm"
+      - "actions"
       - "dependencies"
       - "dependabot"
     pull-request-branch-name:
